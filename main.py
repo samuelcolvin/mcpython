@@ -16,6 +16,13 @@ mcp = FastMCP('Hello World')
 def hello(name: str) -> str:
     logfire.info('env', environ=dict(os.environ))
 
+    try:
+        with logfire.span('import LambdaRuntimeClient'):
+            from lambda_runtime_client import LambdaRuntimeClient
+    except Exception:
+        pass
+
+    logfire.configure(service_name=env, environment=env)
     logfire.info('sys modules:', modules=dict(sys.modules))
 
     for mod_name, mod in list(sys.modules.items()):
@@ -28,6 +35,7 @@ def hello(name: str) -> str:
         logfire.info('LambdaRuntimeClient:', mod_name=mod_name, client=client)
 
     logfire.force_flush()
+
     return f'Hello, {name}!'
 
 
