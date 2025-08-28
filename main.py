@@ -34,7 +34,7 @@ def hello(name: str) -> str:
             continue
         logfire.info('LambdaRuntimeClient:', mod_name=mod_name, client=client)
 
-    logfire.force_flush()
+    # logfire.force_flush()
 
     return f'Hello, {name}!'
 
