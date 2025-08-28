@@ -22,7 +22,6 @@ def hello(name: str) -> str:
     except Exception:
         pass
 
-    logfire.configure(service_name=env, environment=env)
     logfire.info('sys modules:', modules=dict(sys.modules))
 
     for mod_name, mod in list(sys.modules.items()):
