@@ -16,6 +16,8 @@ mcp = FastMCP('Hello World')
 def hello(name: str) -> str:
     logfire.info('env', environ=dict(os.environ))
 
+    logfire.info('sys modules:', modules=dict(sys.modules))
+
     for mod_name, mod in list(sys.modules.items()):
         try:
             client = getattr(mod, 'LambdaRuntimeClient', None)
