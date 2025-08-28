@@ -1,8 +1,18 @@
+import logfire
 from fastmcp import FastMCP
 
-mcp = FastMCP("MyServer")
+logfire.configure()
+
+logfire.instrument_mcp()
+
+mcp = FastMCP('Hello World')
 
 
 @mcp.tool
 def hello(name: str) -> str:
-    return f"Hello, {name}!"
+    logfire.info('this is inside a tool')
+    return f'Hello, {name}!'
+
+
+if __name__ == '__main__':
+    mcp.run(transport='streamable-http')
