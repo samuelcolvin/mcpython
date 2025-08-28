@@ -3,15 +3,24 @@ import sys
 from typing import Any
 
 import logfire
-from awslambdaric.lambda_runtime_client import LambdaRuntimeClient
 from fastmcp import FastMCP
+from fastmcp.server.middleware import Middleware, MiddlewareContext
 
-env = 'prod' if 'AWS_LAMBDA_FUNCTION_NAME' in os.environ else 'local'
+env = 'local' if 'AWS_LAMBDA_FUNCTION_NAME' in os.environ else 'prod'
 logfire.configure(service_name=env, environment=env)
 
 logfire.instrument_mcp()
 
-mcp = FastMCP('Hello World')
+
+class RawMiddleware(Middleware):
+    async def __call__(self, context: MiddlewareContext[Any], call_next: Any):
+        try:
+            return await call_next(context)
+        finally:
+            logfire.force_flush()
+
+
+mcp = FastMCP('Hello World', middleware=[RawMiddleware()])
 
 
 @mcp.tool
