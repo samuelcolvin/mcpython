@@ -12,7 +12,7 @@ logfire.configure(service_name=env, environment=env)
 logfire.instrument_mcp()
 
 
-class RawMiddleware(Middleware):
+class LogfireFlushMiddleware(Middleware):
     async def __call__(self, context: MiddlewareContext[Any], call_next: Any):
         try:
             return await call_next(context)
@@ -20,7 +20,7 @@ class RawMiddleware(Middleware):
             logfire.force_flush()
 
 
-mcp = FastMCP('Hello World', middleware=[RawMiddleware()])
+mcp = FastMCP('Hello World', middleware=[LogfireFlushMiddleware()])
 
 
 @mcp.tool
