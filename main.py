@@ -1,4 +1,5 @@
 import asyncio
+import json
 import os
 import re
 from dataclasses import dataclass
@@ -31,16 +32,6 @@ class LogfireFlushMiddleware(Middleware):
 
 mcp = FastMCP('PyPI Downloads', middleware=[LogfireFlushMiddleware()])
 table_name = 'bigquery-public-data.pypi.file_downloads'
-
-if service_account_content := os.getenv('SERVICE_ACCOUNT_CONTENT'):
-    with open('service-account.json', 'w') as f:
-        f.write(service_account_content)
-
-credentials = service_account.Credentials.from_service_account_file(
-    'service-account.json',
-    scopes=['https://www.googleapis.com/auth/cloud-platform'],
-)
-client = bigquery.Client(credentials=credentials)
 
 
 @dataclass
@@ -151,6 +142,14 @@ async def run_query(ctx: RunContext[Deps], sql: str) -> str:
     if f'from `{table_name}`' not in sql.lower():
         raise ModelRetry(f'Query must be against the `{table_name}` table')
 
+    if service_account_content := os.getenv('SERVICE_ACCOUNT_CONTENT'):
+        credentials = service_account.Credentials.from_service_account_info(
+            json.loads(service_account_content),
+            scopes=['https://www.googleapis.com/auth/cloud-platform'],
+        )
+    else:
+        credentials = None
+    client = bigquery.Client(credentials=credentials)
     loop = asyncio.get_event_loop()
     try:
         query_job = await loop.run_in_executor(None, client.query, sql)
