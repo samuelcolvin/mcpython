@@ -6,11 +6,16 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "fastmcp>=2.11.3",
+    "google-cloud-bigquery>=3.36.0",
     "logfire>=4.3.6",
+    "pydantic-ai-slim>=0.8.0",
 ]
 
 [dependency-groups]
-dev = ["devtools>=0.12.2"]
+dev = [
+    "anthropic>=0.64.0",
+    "devtools>=0.12.2",
+]
 
 [tool.ruff]
 line-length = 120
